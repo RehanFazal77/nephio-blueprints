@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-multus-ds
+  namespace: kube-system
+  labels:
+    app: multus
+spec:
+  selector:
+    matchLabels:
+      name: multus
+  template:
+    metadata:
+      labels:
+        name: multus
+    spec:
+      hostNetwork: true
+      containers:
+      - name: kube-multus
+        image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.0.2
+        command: ["/thin_entrypoint"]
+        args: ["--multus-conf-file=auto"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: cni
+          mountPath: /host/etc/cni/net.d
+        - name: cnibin
+          mountPath: /host/opt/cni/bin
+      volumes:
+      - name: cni
+        hostPath:
+          path: /etc/cni/net.d
+      - name: cnibin
+        hostPath:
+          path: /opt/cni/bin

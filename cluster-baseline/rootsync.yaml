@@ -1,0 +1,13 @@
+apiVersion: configsync.gke.io/v1beta1
+kind: RootSync
+metadata:
+  name: root-sync
+  namespace: config-management-system
+spec:
+  sourceFormat: unstructured
+  git:
+    repo: https://github.com/CHANGE-ME/repo.git # kpt-set: ${cluster-repo-url}
+    branch: main # kpt-set: ${cluster-repo-branch}
+    dir: /
+    auth: none
+    period: 15s

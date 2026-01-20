@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openairinterface
+  labels:
+    nephio.org/cluster-name: my-ran # kpt-set: ${cluster-name}
+    pod-security.kubernetes.io/enforce: baseline
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: free5gc
+  labels:
+    nephio.org/cluster-name: my-core # kpt-set: ${cluster-name}
+    pod-security.kubernetes.io/enforce: baseline

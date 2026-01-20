@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: whereabouts
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: whereabouts
+  template:
+    metadata:
+      labels:
+        name: whereabouts
+    spec:
+      hostNetwork: true
+      containers:
+      - name: whereabouts
+        image: ghcr.io/k8snetworkplumbingwg/whereabouts:v0.6.3
+        command: ["/ip-control-loop"]
+        volumeMounts:
+        - name: cnibin
+          mountPath: /host/opt/cni/bin
+      volumes:
+      - name: cnibin
+        hostPath:
+          path: /opt/cni/bin
