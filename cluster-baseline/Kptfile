@@ -10,7 +10,5 @@ pipeline:
   mutators:
     - image: gcr.io/kpt-fn/apply-setters:v0.2
       configMap:
-        cluster-name: my-cluster
-        cluster-repo-url: https://github.com/CHANGE-ME/repo.git
-        cluster-repo-branch: main
-        workload-type: ran
+        cluster-name: example-cluster
+        cluster-repo-url: https://github.com/example/repo.git

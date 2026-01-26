@@ -1,0 +1,137 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: ippools.whereabouts.cni.cncf.io
+spec:
+  group: whereabouts.cni.cncf.io
+  names:
+    kind: IPPool
+    listKind: IPPoolList
+    plural: ippools
+    singular: ippool
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                range:
+                  type: string
+                allocations:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      podref:
+                        type: string
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: overlappingrangeipreservations.whereabouts.cni.cncf.io
+spec:
+  group: whereabouts.cni.cncf.io
+  names:
+    kind: OverlappingRangeIPReservation
+    listKind: OverlappingRangeIPReservationList
+    plural: overlappingrangeipreservations
+    singular: overlappingrangeipreservation
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                podref:
+                  type: string
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: whereabouts
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: whereabouts
+rules:
+  - apiGroups: ["whereabouts.cni.cncf.io"]
+    resources: ["ippools", "overlappingrangeipreservations"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: whereabouts
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: whereabouts
+subjects:
+  - kind: ServiceAccount
+    name: whereabouts
+    namespace: kube-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: whereabouts
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: whereabouts
+  template:
+    metadata:
+      labels:
+        name: whereabouts
+    spec:
+      hostNetwork: true
+      tolerations:
+        - operator: Exists
+      serviceAccountName: whereabouts
+      containers:
+        - name: whereabouts
+          image: ghcr.io/k8snetworkplumbingwg/whereabouts:v0.7.0
+          command: ["/ip-control-loop"]
+          args:
+            - "-log-level"
+            - "debug"
+          volumeMounts:
+            - name: cnibin
+              mountPath: /host/opt/cni/bin
+      initContainers:
+        - name: install-cni
+          image: ghcr.io/k8snetworkplumbingwg/whereabouts:v0.7.0
+          command: ["cp", "/whereabouts", "/host/opt/cni/bin/whereabouts"]
+          volumeMounts:
+            - name: cnibin
+              mountPath: /host/opt/cni/bin
+      volumes:
+        - name: cnibin
+          hostPath:
+            path: /opt/cni/bin

@@ -1,0 +1,8 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata:
+  name: whereabouts-ipam
+  annotations:
+    config.kubernetes.io/local-config: "true"
+info:
+  description: Whereabouts IPAM for dynamic IP allocation

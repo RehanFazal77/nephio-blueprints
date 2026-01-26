@@ -5,9 +5,9 @@ metadata:
   annotations:
     config.kubernetes.io/local-config: "true"
 info:
-  description: Platform add-ons (storage, monitoring)
+  description: Platform add-ons including storage
 pipeline:
   mutators:
     - image: gcr.io/kpt-fn/apply-setters:v0.2
       configMap:
-        cluster-name: my-cluster
+        cluster-name: example-cluster
