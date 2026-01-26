@@ -113,10 +113,7 @@ spec:
       initContainers:
         - name: install-multus-binary
           image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.0.2-thick
-          command:
-            - "cp"
-            - "/usr/src/multus-cni/bin/multus-shim"
-            - "/host/opt/cni/bin/multus-shim"
+          command: ["cp", "/usr/src/multus-cni/bin/multus-shim", "/host/opt/cni/bin/multus-shim"]
           volumeMounts:
             - name: cnibin
               mountPath: /host/opt/cni/bin
