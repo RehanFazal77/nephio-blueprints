@@ -26,6 +26,14 @@ info:
   - 5g
 pipeline:
   mutators:
+  - name: PackageVariant.network-intents..0
+    image: gcr.io/kpt-fn/apply-setters:v0.2
+    configMap:
+      control-plane-gateway: 192.168.10.1
+      control-plane-range: 192.168.10.0/24
+      interface-name: eth0
+      user-plane-gateway: 192.168.20.1
+      user-plane-range: 192.168.20.0/24
   - image: gcr.io/kpt-fn/apply-setters:v0.2
     configMap:
       control-plane-gateway: 192.168.10.1
