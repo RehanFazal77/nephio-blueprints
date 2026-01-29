@@ -31,7 +31,7 @@ pipeline:
         site-id: site-ran-01
         
         # Git repository for ConfigSync
-        cluster-repo-url: https://github.com/YOUR-ORG/nephio-my-ran.git
+        cluster-repo-url: https://github.com/rehanfazal77/nephio-my-ran.git
         cluster-repo-branch: main
         
         # Resource configuration
