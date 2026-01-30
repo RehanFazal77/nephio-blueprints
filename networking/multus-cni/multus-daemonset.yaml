@@ -158,9 +158,10 @@ spec:
       - name: install-multus-binary
         image: ghcr.io/k8snetworkplumbingwg/multus-cni:v4.0.2 # kpt-set: ${multus-image}
         command:
-          - "cp"
-          - "/usr/src/multus-cni/bin/multus"
-          - "/host/opt/cni/bin/multus"
+          - /bin/sh
+          - -c
+          - |
+            cp /usr/src/multus-cni/bin/multus /host/opt/cni/bin/multus
         resources:
           requests:
             cpu: "10m"
@@ -184,4 +185,5 @@ spec:
           name: multus-cni-config
           items:
           - key: cni-conf.json
+
             path: 70-multus.conf
