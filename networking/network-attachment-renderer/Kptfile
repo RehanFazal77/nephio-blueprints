@@ -19,5 +19,6 @@ pipeline:
         target-namespace: "openairinterface"
     
     # Custom KRM function to render NADs from intents
-    - image: gcr.io/nephio-project/nad-renderer:v1.0.0
+    - image:  docker.io/nephio/nad-fn:v3.0.0 
+
       configPath: nad-renderer-config.yaml
