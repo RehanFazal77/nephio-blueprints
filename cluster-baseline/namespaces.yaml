@@ -1,5 +1,32 @@
-# Standard namespaces for network functions
+# Namespaces with Pod Security Standards
+# Combines namespace definitions with Pod Security Admission labels
+# Kubernetes 1.23+ uses Pod Security Admission instead of PSPs
 
+---
+# Privileged mode for system namespaces (needed for CNI, storage, etc)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-system
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: local-path-storage
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+
+---
+# Network Function namespaces with baseline Pod Security
+# OAI and Free5GC need elevated privileges but not fully privileged
+
+# OAI RAN namespaces
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -7,14 +34,9 @@ metadata:
   labels:
     nephio.org/cluster-name: my-ran # kpt-set: ${cluster-name}
     nephio.org/workload-type: ran
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: free5gc # kpt-set: ${namespace-prefix}free5gc
-  labels:
-    nephio.org/cluster-name: my-core # kpt-set: ${cluster-name}
-    nephio.org/workload-type: core
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
 ---
 apiVersion: v1
 kind: Namespace
@@ -24,6 +46,9 @@ metadata:
     nephio.org/cluster-name: my-ran # kpt-set: ${cluster-name}
     nephio.org/workload-type: ran
     nephio.org/nf-type: cucp
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
 ---
 apiVersion: v1
 kind: Namespace
@@ -33,6 +58,9 @@ metadata:
     nephio.org/cluster-name: my-ran # kpt-set: ${cluster-name}
     nephio.org/workload-type: ran
     nephio.org/nf-type: cuup
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
 ---
 apiVersion: v1
 kind: Namespace
@@ -42,6 +70,22 @@ metadata:
     nephio.org/cluster-name: my-ran # kpt-set: ${cluster-name}
     nephio.org/workload-type: ran
     nephio.org/nf-type: du
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
+
+---
+# Free5GC Core namespaces
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: free5gc # kpt-set: ${namespace-prefix}free5gc
+  labels:
+    nephio.org/cluster-name: my-core # kpt-set: ${cluster-name}
+    nephio.org/workload-type: core
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
 ---
 apiVersion: v1
 kind: Namespace
@@ -51,6 +95,9 @@ metadata:
     nephio.org/cluster-name: my-core # kpt-set: ${cluster-name}
     nephio.org/workload-type: core
     nephio.org/plane: control
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
 ---
 apiVersion: v1
 kind: Namespace
@@ -60,3 +107,20 @@ metadata:
     nephio.org/cluster-name: my-core # kpt-set: ${cluster-name}
     nephio.org/workload-type: core
     nephio.org/plane: user
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
+
+---
+# Pod Security Standards explanation:
+# 
+# privileged: Unrestricted, allows known privilege escalations
+#   - Needed for: CNI plugins, storage provisioners, system components
+#
+# baseline: Minimally restrictive, prevents known privilege escalations
+#   - Allowed: hostNetwork (for SCTP/secondary interfaces)
+#   - Allowed: specific capabilities (NET_ADMIN, NET_RAW for 5G)
+#   - Forbidden: privileged containers, hostPath, hostPID
+#
+# restricted: Heavily restricted, follows Pod hardening best practices
+#   - Too restrictive for 5G NFs which need network capabilities
