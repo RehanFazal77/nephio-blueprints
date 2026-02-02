@@ -1,0 +1,36 @@
+# Pod Security Standards for system namespaces
+# Kubernetes 1.23+ uses Pod Security Admission instead of PSPs
+
+---
+# Privileged mode for system namespaces (needed for CNI, storage, etc)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-system
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: local-path-storage
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+
+---
+# Pod Security Standards explanation:
+# 
+# privileged: Unrestricted, allows known privilege escalations
+#   - Needed for: CNI plugins, storage provisioners, system components
+#
+# baseline: Minimally restrictive, prevents known privilege escalations
+#   - Allowed: hostNetwork (for SCTP/secondary interfaces)
+#   - Allowed: specific capabilities (NET_ADMIN, NET_RAW for 5G)
+#   - Forbidden: privileged containers, hostPath, hostPID
+#
+# restricted: Heavily restricted, follows Pod hardening best practices
+#   - Too restrictive for 5G NFs which need network capabilities
