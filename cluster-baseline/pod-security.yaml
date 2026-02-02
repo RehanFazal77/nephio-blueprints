@@ -21,16 +21,6 @@ metadata:
     pod-security.kubernetes.io/audit: privileged
     pod-security.kubernetes.io/warn: privileged
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: config-management-system
-  labels:
-    pod-security.kubernetes.io/enforce: privileged
-    pod-security.kubernetes.io/audit: privileged
-    pod-security.kubernetes.io/warn: privileged
-
----
 # Baseline mode for network function namespaces
 # OAI and Free5GC need some elevated privileges but not fully privileged
 
@@ -128,4 +118,5 @@ metadata:
 #   - Forbidden: privileged containers, hostPath, hostPID
 #
 # restricted: Heavily restricted, follows Pod hardening best practices
+
 #   - Too restrictive for 5G NFs which need network capabilities
