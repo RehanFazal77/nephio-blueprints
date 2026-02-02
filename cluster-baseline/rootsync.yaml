@@ -22,7 +22,7 @@ spec:
   # Git repository configuration
   git:
     # Repository URL - will be set by Porch using kpt-set
-    repo: https://github.com/rehanfazal77/nephio-my-ran.git # kpt-set: ${cluster-repo-url}
+    repo: https://github.com/YOUR-ORG/nephio-my-ran.git # kpt-set: ${cluster-repo-url}
     
     # Branch to sync from
     branch: main # kpt-set: ${cluster-repo-branch}
