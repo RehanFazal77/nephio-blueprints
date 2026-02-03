@@ -1,0 +1,17 @@
+apiVersion: kpt.dev/v1
+kind: Kptfile
+metadata:
+  name: nad-renderer
+  annotations:
+    config.kubernetes.io/local-config: "true"
+info:
+  description: Renders NetworkAttachmentDefinitions from NetworkIntents
+  keywords:
+    - nad
+    - renderer
+    - networking
+pipeline:
+  mutators:
+    - image: gcr.io/kpt-fn/apply-setters:v0.2
+      configMap:
+        target-namespace: "default"
