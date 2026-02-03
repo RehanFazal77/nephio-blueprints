@@ -2,8 +2,7 @@ apiVersion: nephio.org/v1alpha1
 kind: NetworkIntent
 metadata:
   name: control-plane-intent
-  annotations:
-    config.kubernetes.io/local-config: "true"
+  
 spec:
   networkName: control-plane
   interfaceType: macvlan # kpt-set: ${cni-type}
