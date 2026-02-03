@@ -27,8 +27,6 @@ kind: ConfigMap
 metadata:
   name: node-config-script
   namespace: kube-system
-  annotations:
-    config.kubernetes.io/local-config: "true"
 data:
   label-nodes.sh: |
     #!/bin/bash
@@ -118,4 +116,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: node-labeler
+
   namespace: kube-system
